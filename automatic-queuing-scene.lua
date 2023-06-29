@@ -28,6 +28,12 @@ local CLIENTS = {
 
 -----------------------------------------------------------------------------------
 
+local clock = os.clock
+function sleep(n)  -- seconds
+  local t0 = clock()
+  while clock() - t0 <= n do end
+end
+
 local AQS = {}
 
 function AQS:new()
@@ -143,7 +149,7 @@ function AQS:process_line(line)
         self:show_screen()
     elseif self.status == 'game finished' or self.status == 'prelobby' then
         if self.status == 'game finished' then
-            os.execute("timeout " .. self.delay)
+            sleep(self.delay)
         end
         self:hide_screen()
     end
