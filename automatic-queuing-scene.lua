@@ -309,7 +309,7 @@ function script_update(settings)
     if aqs.toggle then
         print('Restarting AQS')
         aqs:setup()
-        obs.timer_add(loop, 5000)
+        obs.timer_add(loop, 100)
     end
 end
 
