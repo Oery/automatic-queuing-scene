@@ -26,6 +26,8 @@ local CLIENTS = {
     ['Feather Client'] = APPDATA .. '\\.minecraft\\logs\\latest.log'
 }
 
+FILE = ""
+
 -----------------------------------------------------------------------------------
 
 local clock = os.clock
@@ -63,14 +65,17 @@ function AQS:setup()
         return
     end
 
-    self.file_ptr = io.open(self.log_file, 'r')
-    if not self.file_ptr then
+    if FILE ~= "" then
+        FILE:close()
+    end
+    FILE = io.open(self.log_file, 'r')
+    if not FILE then
         print('Failed to open log file')
         return
     end
 
-    local content = self.file_ptr:read("*a")
-    self.file_ptr:close()
+    local content = FILE:read("*a")
+    print("File Opened")
 
     local lines = self:split(content, "\n")
     self.index = #lines
@@ -197,18 +202,15 @@ function AQS:read_latest_lines()
     -- if modified_time ~= self.original_edit then
     --     self.original_edit = modified_time
     -- end
-
-    self.file_ptr = io.open(self.log_file, "r")
-    if not self.file_ptr then
+    
+    if not FILE then
         return
     end
 
     local lines = {}
-    for line in self.file_ptr:lines() do
+    for line in FILE:lines() do
         table.insert(lines, line)
     end
-
-    self.file_ptr:close()
 
     if #lines < self.index then
         self.index = #lines
@@ -307,10 +309,13 @@ function script_update(settings)
     if aqs.toggle then
         print('Restarting AQS')
         aqs:setup()
-        obs.timer_add(loop, 100)
+        obs.timer_add(loop, 5000)
     end
 end
 
 function script_unload()
     obs.timer_remove(loop)
+    if FILE ~= "" then
+        FILE:close()
+    end
 end
